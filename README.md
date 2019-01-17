@@ -1,2 +1,2 @@
 # test
-Eh preciso sempre testar para acertar e aprendendo errando
+Eh preciso testar para acertar e aprender errando
