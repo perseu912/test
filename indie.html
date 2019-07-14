@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body{
+	font-size: 280%;
+	position: absolute;
+	margin: 0;
+	width: 100%;
+	height: 70vh;
+	font-Family: Heveltica, Arial;
+}
+h1{
+	margin: 0;
+	width: 100%;
+	background-color: #690066;
+	text-align: center;
+	font-size: 200%;
+	color: #009B66;
+}
+.send{
+	margin: 0;
+	width: 95%;
+	border-color: black;
+}
+.msg{
+	border-width: 4px;
+	border-type: inset;
+	overflow-y: scroll;
+	width: 95%;
+	height: 80%;
+	background-color: Lavender;
+	margin: auto;
+}
+
+button {
+	margin: 0;
+	padding: 1% 4%;
+	background-color: cyan;
+	font-size: 120%;
+	border: none;
+	border-radius:40%;
+}
+.mess p{
+	margin: 0;
+}
+.mess b{
+	margin:0;
+}
+.mess{
+	margin: 3%;
+}
+input{
+	height: 20%;
+	width: 70%;
+	font-size:140%;
+}
+.div{
+	margin: 0;
+	background-color: Lavender;
+	border: 0;
+	height: 3%;
+}
+
+.on{
+	margin:0;
+	background-color: Lavender;
+	text-align: center;
+}
+hr{
+	margin:0;
+}
+</style>
+</head>
+<body>
+<h1>Chat v0.1</h1>
+<p class="on" id="on"></p>
+<small><p class="on" id="usersCount"></p></small>
+<hr>
+<div class="msg" id="msg">
+</div>
+<div class="send" id="digit" align="center">
+<input id="send" placeholder="digite seu nome">
+<button onclick="login()" id="bt">login</button>
+</div>
+<hr></hr>
+<script src="/jquery.js">
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+$(function () {
+	
+//$("#on").html(`seja bem vindo ${user.nameStyle}`)
+
+$("#send").keypress( function(e) {
+	console.log(45)
+	var key = e.which
+	console.log(key)
+	if((key == 13)){
+		console.log(46)
+		$("#bt").click();
+		return false
+	}
+})
+
+//color definition
+	const colors = ["red","cyan","green","blue"];
+
+// escond o chat
+$("#msg").hide()
+	
+//start server 
+socket = io()
+	user = {}
+
+    function randomColor(colors) {
+       return colors[Math.floor(Math.random() * colors.length)];
+    }
+    
+    
+//inicio=> login
+login = () => {
+    //    e.preventDefault()
+        user.name = $("#send").val()
+        cor = randomColor(colors)
+        user.nameStyle = `<b style=" margin:0; color:   ${cor}">${user.name}</b>`
+     
+        /*envia user pro server via socket
+        e verifica disponibilidade e recebe numero 
+        de users*/
+        console.log('on')
+        socket.emit("user", user, function(res) {
+            console.log(555)
+           if(res.validate){
+               console.log(res)
+              $("#bt").text('send')
+              $("#bt").attr("onclick", " received()")
+               $("#msg").fadeIn(" slow")
+               $("#send").val("")
+               $("#send").attr("placeholder", "digite aqui...")
+        }
+           else{
+               alert(" nome já existe")
+         }
+      })
+      return false
+ }
+ 
+ //recebe o user que entrou
+     socket.on("user", (user) => {
+	    joi = $(`<small align="center"><p align="center">${user.nameStyle} entrou no chat</p></mall>`)
+        $("#msg").append(joi)
+        $('#msg').animate({scrollTop: $('#msg')[0]
+	     .scrollHeight}, 500);
+	     return false
+     })
+
+//manda msg com user ja logado
+ received = () => {
+         user.msg = $("#send").val()
+	     socket.emit('chat', user);
+	     $("#send").val("")
+	     $('#msg').animate({scrollTop: $('#msg')[0]
+	     .scrollHeight}, 500);
+	     return false
+      }
+      
+      //recebe msg do server via socket
+      socket.on('chat', function(user){
+	     txt = (`<div class=" mess">${user.nameStyle}:<br><p>${(user.msg)}</p></div>`)
+	     $("#msg").append(txt)
+	     $('#msg').animate({scrollTop: $('#msg')[0]
+	     .scrollHeight}, 500);
+      })
+      
+      //conta o numero de users
+      socket.on("users", (data) => {
+          $("#usersCount").text(`Online(${data.length})`)
+          })
+          
+      //mostra o chat online
+    socket.on("connect", () => {
+       $("#on").text(`Chat Online`)
+  })
+     
+     //recebe o user que saiu
+     socket.on("user exit", (user) => {
+	      joi = $(`<small align="center"><p align="center">${user.nameStyle} saiu do chat</p></mall>`)
+         $("#msg").append(joi)
+         $('#msg').animate({scrollTop: $('#msg')[0]
+	     .scrollHeight}, 500);
+	     return false
+      })
+   
+   //desconexão
+      socket.on("disconnect", () => {
+	     $("#on").text(`Offline`)
+	     nop = `<small align="center">vc foi desconectado</small>`
+	     $("#digit").html(nop)
+	      $('#msg').animate({scrollTop: $('#msg')[0]
+	     .scrollHeight}, 500);
+	     return false
+      })
+
+
+})
+</script>
+<br>
+<br>
+<p align="center">Reinan®2019.</p>
+<body>
+    
