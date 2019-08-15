@@ -12,7 +12,7 @@ usersName = []
 data = {}
 port = process.env.PORT || 8001
 app = express()
-index = path.join(__dirname+"/index")
+index = path.join(__dirname,`/index`)
 
 //app
 app.use(express.static(index))
