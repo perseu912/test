@@ -4,7 +4,8 @@
   "description": "chat in express/socket.io",
   "main": "app.js",
   "scripts": {
-    "test": "DEBUG=* nodemon app.js"
+    "test": "DEBUG=* nodemon app.js",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
